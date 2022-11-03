@@ -94,7 +94,7 @@ def main(api_key):
     salary_map = add_salaries(espn_team_map, "nba_beta_salary.csv")
     # overall_dict = {}
     for team_name, salary_list in salary_map.items():
-        report_str = "Hello {team_name},<brunning_totalr> Below is a summary of your players as of {current_time}:<br><br>".format(team_name=team_name, current_time=current_time)
+        report_str = "Hello {team_name},<br> Below is a summary of your players as of {current_time}:<br><br>".format(team_name=team_name, current_time=current_time)
         running_total = 0
         for salary_tuple in salary_list:
             report_str += "Player: {player}, Salary: {salary}<br>".format(player=salary_tuple[0], salary=salary_tuple[1])

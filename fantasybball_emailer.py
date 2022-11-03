@@ -59,7 +59,7 @@ def add_salaries(team_map, salary_csv):
 
     return updated_team_dict
 
-def send_email(overall_dict, api_key):
+def send_email(report_str, api_key):
     import os
     from sendgrid import SendGridAPIClient
     from sendgrid.helpers.mail import Mail, Email, From
@@ -67,15 +67,12 @@ def send_email(overall_dict, api_key):
 
     sg = SendGridAPIClient(api_key)
 
-    html_content = ""
-    for report_str_vals in overall_dict.values():
-        html_content += report_str_vals
 
     message = Mail(
         to_emails="sumesharma1997@gmail.com",
         from_email=From("sumesharma1997@gmail.com", "Sumesh Sharma, the Commissioner"),
-        subject="Test Email",
-        html_content=html_content
+        subject="[FANTASY BASKETBALL] You're Over the Cap, Buddy",
+        html_content=report_str
         )
     print(message)
     try:
@@ -95,18 +92,20 @@ def main(api_key):
     current_time = datetime.today().strftime('%Y-%m-%d %H:%M:%S')
     espn_team_map = espn_team_pull(2023, 1661951033)
     salary_map = add_salaries(espn_team_map, "nba_beta_salary.csv")
-    overall_dict = {}
+    # overall_dict = {}
     for team_name, salary_list in salary_map.items():
-        report_str = "Your team name is {team_name}. Below is a summary of your players as of {current_time}:<br><br>".format(team_name=team_name, current_time=current_time)
+        report_str = "Hello {team_name},<brunning_totalr> Below is a summary of your players as of {current_time}:<br><br>".format(team_name=team_name, current_time=current_time)
         running_total = 0
         for salary_tuple in salary_list:
             report_str += "Player: {player}, Salary: {salary}<br>".format(player=salary_tuple[0], salary=salary_tuple[1])
             running_total += int(salary_tuple[1][1:])
         running_total_dollar = '${:,.2f}'.format(running_total)
-        report_str += "<br>Your total salary with these players is {running_total_dollar}".format(running_total_dollar=running_total_dollar)
-        overall_dict[team_name] = report_str
+        report_str += "<br>Your total salary with these players is {running_total_dollar}. You are receiving this email because your team is above the cap. Please fix this ASAP or you risk disqualifying from today's matches.".format(running_total_dollar=str(running_total_dollar))
+        # overall_dict[team_name] = report_str
         print(report_str)
-    send_email(overall_dict, api_key)
+        if running_total >= 145000000:
+            print("over")
+            send_email(report_str, api_key)
 
 if __name__ == "__main__":
     import argparse

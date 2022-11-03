@@ -59,20 +59,20 @@ def add_salaries(team_map, salary_csv):
 
     return updated_team_dict
 
-def send_email(overall_dict):
+def send_email(overall_dict, api_key):
     import os
     from sendgrid import SendGridAPIClient
     from sendgrid.helpers.mail import Mail, Email, From
     from python_http_client.exceptions import HTTPError
 
-    sg = SendGridAPIClient('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')
+    sg = SendGridAPIClient(api_key)
 
     html_content = ""
     for report_str_vals in overall_dict.values():
         html_content += report_str_vals
 
     message = Mail(
-        to_emails="bryansback7@gmail.com",
+        to_emails="sumesharma1997@gmail.com",
         from_email=From("sumesharma1997@gmail.com", "Sumesh Sharma, the Commissioner"),
         subject="Test Email",
         html_content=html_content
@@ -90,7 +90,7 @@ def send_email(overall_dict):
         return e.message
 
 
-def main():
+def main(api_key):
     from datetime import datetime
     current_time = datetime.today().strftime('%Y-%m-%d %H:%M:%S')
     espn_team_map = espn_team_pull(2023, 1661951033)
@@ -106,7 +106,11 @@ def main():
         report_str += "<br>Your total salary with these players is {running_total_dollar}".format(running_total_dollar=running_total_dollar)
         overall_dict[team_name] = report_str
         print(report_str)
-    send_email(overall_dict)
+    send_email(overall_dict, api_key)
 
 if __name__ == "__main__":
-    main()
+    import argparse
+    parser = argparse.ArgumentParser("fantasy_bball")
+    parser.add_argument("apikey", help="API key for sendgrid client", type=str)
+    args = parser.parse_args()
+    main(args.apikey)
